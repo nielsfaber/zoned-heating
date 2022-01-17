@@ -11,6 +11,7 @@ from homeassistant.const import (
     SERVICE_TURN_ON,
     SERVICE_TURN_OFF,
     STATE_ON,
+    Platform,
 )
 from homeassistant.components.climate.const import (
     ATTR_HVAC_MODE,
@@ -23,10 +24,6 @@ from homeassistant.components.climate.const import (
     HVAC_MODE_OFF,
     SERVICE_SET_HVAC_MODE,
     SERVICE_SET_TEMPERATURE,
-    DOMAIN as CLIMATE_DOMAIN,
-)
-from homeassistant.components.climate.const import (
-    DOMAIN as SWITCH_DOMAIN,
 )
 from homeassistant.core import (
     HomeAssistant,
@@ -65,7 +62,7 @@ def parse_state(state):
 async def async_set_hvac_mode(hass: HomeAssistant, entity_ids, hvac_mode: str):
     """helper for setting hvac_mode"""
     params = {
-        CONF_DOMAIN: CLIMATE_DOMAIN,
+        CONF_DOMAIN: Platform.CLIMATE,
         CONF_SERVICE: SERVICE_SET_HVAC_MODE,
         ATTR_SERVICE_DATA: {
             ATTR_HVAC_MODE: hvac_mode
@@ -74,8 +71,6 @@ async def async_set_hvac_mode(hass: HomeAssistant, entity_ids, hvac_mode: str):
             CONF_ENTITY_ID: entity_ids
         }
     }
-    _LOGGER.debug("async_set_hvac_mode")
-    _LOGGER.debug(params)
     service_task = hass.async_create_task(
         hass.services.async_call(
             **params,
@@ -90,7 +85,7 @@ async def async_set_hvac_mode(hass: HomeAssistant, entity_ids, hvac_mode: str):
 async def async_set_temperature(hass: HomeAssistant, entity_ids, temperature: float):
     """helper for setting temperature setpoint"""
     params = {
-        CONF_DOMAIN: CLIMATE_DOMAIN,
+        CONF_DOMAIN: Platform.CLIMATE,
         CONF_SERVICE: SERVICE_SET_TEMPERATURE,
         ATTR_SERVICE_DATA: {
             ATTR_TEMPERATURE: temperature
@@ -99,8 +94,6 @@ async def async_set_temperature(hass: HomeAssistant, entity_ids, temperature: fl
             CONF_ENTITY_ID: entity_ids
         }
     }
-    _LOGGER.debug("async_set_temperature")
-    _LOGGER.debug(params)
     service_task = hass.async_create_task(
         hass.services.async_call(
             **params,
@@ -115,7 +108,7 @@ async def async_set_temperature(hass: HomeAssistant, entity_ids, temperature: fl
 async def async_set_switch_state(hass: HomeAssistant, entity_ids, state: str):
     """helper for setting switch state"""
     params = {
-        CONF_DOMAIN: SWITCH_DOMAIN,
+        CONF_DOMAIN: Platform.SWITCH,
         CONF_SERVICE: SERVICE_TURN_ON if state == STATE_ON else SERVICE_TURN_OFF,
         ATTR_SERVICE_DATA: {
         },
@@ -123,8 +116,6 @@ async def async_set_switch_state(hass: HomeAssistant, entity_ids, state: str):
             CONF_ENTITY_ID: entity_ids
         }
     }
-    _LOGGER.debug("async_set_switch_state")
-    _LOGGER.debug(params)
     service_task = hass.async_create_task(
         hass.services.async_call(
             **params,

@@ -2,9 +2,10 @@
   "domain": "zoned_heating",
   "name": "Zoned Heating",
   "version": "v0.0.0",
-  "documentation": "",
-  "dependencies": ["climate", "switch"],
-  "codeowners": [],
+  "documentation": "https://github.com/nielsfaber/zoned-heating",
+  "issue_tracker": "https://github.com/nielsfaber/zoned-heating/issues",
+  "dependencies": ["switch","climate"],
+  "codeowners": ["@nielsfaber"],
   "config_flow": true,
   "iot_class": "local_push"
 }

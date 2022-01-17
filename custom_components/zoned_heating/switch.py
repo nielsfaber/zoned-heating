@@ -4,6 +4,7 @@ from homeassistant import config_entries
 from homeassistant.const import (
     STATE_ON,
     ATTR_TEMPERATURE,
+    Platform,
 )
 from homeassistant.core import (
     HomeAssistant,
@@ -23,10 +24,6 @@ from homeassistant.components.climate.const import (
     CURRENT_HVAC_HEAT,
     ATTR_CURRENT_TEMPERATURE,
     HVAC_MODE_OFF,
-    DOMAIN as CLIMATE_DOMAIN,
-)
-from homeassistant.components.climate.const import (
-    DOMAIN as SWITCH_DOMAIN
 )
 from . import const
 from .util import (
@@ -36,6 +33,7 @@ from .util import (
     async_set_switch_state,
     compute_domain,
 )
+
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -48,7 +46,7 @@ async def async_setup_entry(
     """Set up switch(es) for zoned heating platform."""
 
     controller = config_entry.options.get(const.CONF_CONTROLLER)
-    zones = config_entry.options.get(const.CONF_ZONES)
+    zones = config_entry.options.get(const.CONF_ZONES, [])
     max_setpoint = config_entry.options.get(const.CONF_MAX_SETPOINT)
 
     async_add_entities([
@@ -136,6 +134,8 @@ class ZonedHeaterSwitch(ToggleEntity, RestoreEntity):
     async def async_start_state_listeners(self):
         """start watching for state changes of controller / zone entities"""
         await self.async_stop_state_listeners()
+        if not len(self._zone_entities) or not self._controller_entity:
+            return
         self._state_listeners = [
             async_track_state_change(
                 self.hass,
@@ -184,12 +184,12 @@ class ZonedHeaterSwitch(ToggleEntity, RestoreEntity):
             isinstance(new_state[ATTR_CURRENT_TEMPERATURE], float)
         ):
             # setpoint of a zone was updated, check whether controller needs to be updated
-            _LOGGER.debug("Zone {} updated setpoint={}".format(entity, new_state[ATTR_TEMPERATURE]))
+            _LOGGER.debug("Zone {} updated: setpoint={}".format(entity, new_state[ATTR_TEMPERATURE]))
             await self.async_calculate_override()
 
         if old_state[ATTR_HVAC_ACTION] != new_state[ATTR_HVAC_ACTION]:
             # action of a zone was updated, check whether controller needs to be updated
-            _LOGGER.debug("Zone {} updated action={}".format(entity, new_state[ATTR_HVAC_ACTION]))
+            _LOGGER.debug("Zone {} updated: action={}".format(entity, new_state[ATTR_HVAC_ACTION]))
             await self.async_calculate_override()
 
     async def async_calculate_override(self):
@@ -246,10 +246,9 @@ class ZonedHeaterSwitch(ToggleEntity, RestoreEntity):
         if current_state[ATTR_HVAC_MODE] != HVAC_MODE_HEAT:
             # uupdate to heat mode if needed
             self._ignore_controller_state_changes = True
-            _LOGGER.debug(compute_domain(self._controller_entity))
-            if compute_domain(self._controller_entity) == CLIMATE_DOMAIN:
+            if compute_domain(self._controller_entity) == Platform.CLIMATE:
                 await async_set_hvac_mode(self.hass, self._controller_entity, HVAC_MODE_HEAT)
-            elif compute_domain(self._controller_entity) == SWITCH_DOMAIN:
+            elif compute_domain(self._controller_entity) == Platform.SWITCH:
                 await async_set_switch_state(self.hass, self._controller_entity, STATE_ON)
             self._ignore_controller_state_changes = False
 
@@ -267,15 +266,15 @@ class ZonedHeaterSwitch(ToggleEntity, RestoreEntity):
         current_state = parse_state(self.hass.states.get(self.entity_id))
 
         if current_state[ATTR_HVAC_MODE] != self._stored_controller_state and self._stored_controller_state is not None:
-            if compute_domain(self._controller_entity) == CLIMATE_DOMAIN:
+            if compute_domain(self._controller_entity) == Platform.CLIMATE:
                 await async_set_hvac_mode(self.hass, self._controller_entity, self._stored_controller_state)
-            elif compute_domain(self._controller_entity) == SWITCH_DOMAIN:
+            elif compute_domain(self._controller_entity) == Platform.SWITCH:
                 await async_set_switch_state(self.hass, self._controller_entity, self._stored_controller_state)
 
         if (
             current_state[ATTR_TEMPERATURE] != self._stored_controller_setpoint and
             isinstance(self._stored_controller_setpoint, float) and
-            compute_domain(self._controller_entity) == CLIMATE_DOMAIN
+            compute_domain(self._controller_entity) == Platform.CLIMATE
         ):
             await async_set_temperature(self.hass, self._controller_entity, self._stored_controller_setpoint)
 
@@ -309,7 +308,7 @@ class ZonedHeaterSwitch(ToggleEntity, RestoreEntity):
 
         if (
             new_setpoint != current_state[ATTR_TEMPERATURE] and
-            compute_domain(self._controller_entity) == CLIMATE_DOMAIN
+            compute_domain(self._controller_entity) == Platform.CLIMATE
         ):
             _LOGGER.debug("Updating override setpoint={}".format(new_setpoint))
             self._ignore_controller_state_changes = True

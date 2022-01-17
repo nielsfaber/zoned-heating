@@ -7,10 +7,10 @@ from homeassistant import config_entries
 from homeassistant.core import callback
 import homeassistant.helpers.config_validation as cv
 from homeassistant.components.climate import (
-    DOMAIN as CLIMATE_DOMAIN,
     ATTR_MIN_TEMP,
     ATTR_MAX_TEMP
 )
+from homeassistant.const import Platform
 from . import const
 
 _LOGGER = logging.getLogger(__name__)
@@ -20,7 +20,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=const.DOMAIN):
     """Config flow for Zoned Heating."""
 
     VERSION = 1
-    CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
+    CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_PUSH
 
     async def async_step_user(self, user_input=None):
         """Handle a flow initialized by the user."""
@@ -28,8 +28,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=const.DOMAIN):
         _LOGGER.debug("async_step_user")
 
         # Only a single instance of the integration
-        if self._async_current_entries():
-            return self.async_abort(reason="single_instance_allowed")
+        # if self._async_current_entries():
+        #     return self.async_abort(reason="single_instance_allowed")
 
         id = secrets.token_hex(6)
 
@@ -104,7 +104,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
         default = [
             climate
-            for climate in self.config_entry.options.get(const.CONF_ZONES)
+            for climate in self.config_entry.options.get(const.CONF_ZONES, [])
             if climate in zone_options
         ]
 
@@ -138,7 +138,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         controller_state = self.hass.states.get(self.controller)
         min_temp = 0
         max_temp = 100
-        if self.controller.startswith(CLIMATE_DOMAIN):
+        if self.controller.startswith(Platform.CLIMATE):
             min_temp = round(controller_state.attributes.get(ATTR_MIN_TEMP))
             max_temp = round(controller_state.attributes.get(ATTR_MAX_TEMP))
 
