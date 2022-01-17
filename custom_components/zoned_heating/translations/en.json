@@ -1,0 +1,27 @@
+{
+  "options": {
+    "step": {
+      "init": {
+        "title": "Configure Zoned Heating settings",
+        "description": "Choose device which controls the boiler",
+        "data": {
+          "controller": "Controller entity"
+        }
+      },
+      "zones": {
+        "title": "Configure Zoned Heating settings",
+        "description": "Choose devices which control the zones",
+        "data": {
+          "controller": "Zone entites"
+        }
+      },
+      "max_setpoint": {
+        "title": "Configure Zoned Heating settings",
+        "description": "Limit the maximum setpoint which can be requested by the zones",
+        "data": {
+          "max_setpoint": "Controller setpoint temperature limit"
+        }
+      }
+    }
+  }
+}

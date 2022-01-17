@@ -1,0 +1,7 @@
+*.DS_Store
+custom_components/zoned_heating/__pycache__/*
+.vscode
+._*
+README.html
+*__pycache__**
+*.pyc
