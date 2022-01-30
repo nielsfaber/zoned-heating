@@ -168,7 +168,7 @@ class ZonedHeaterSwitch(ToggleEntity, RestoreEntity):
             self._stored_controller_setpoint = new_state[ATTR_TEMPERATURE]
             await self.async_update_ha_state()
 
-        if new_state[ATTR_HVAC_MODE] != old_state[ATTR_HVAC_MODE] and new_state[ATTR_HVAC_MODE] == HVAC_MODE_HEAT:
+        if new_state[ATTR_HVAC_MODE] != old_state[ATTR_HVAC_MODE] and new_state[ATTR_HVAC_MODE] == HVAC_MODE_OFF:
             _LOGGER.debug("Controller was turned off, disable zones")
             await self.async_turn_off_zones()
 
@@ -209,7 +209,7 @@ class ZonedHeaterSwitch(ToggleEntity, RestoreEntity):
         temperature_increase = 0
 
         if len(temperature_increase_per_state) and self._enabled:
-            temperature_increase = max(temperature_increase_per_state)
+            temperature_increase = round(max(temperature_increase_per_state), 1)
             override_active = temperature_increase > 0
 
         if (not self._override_active and not override_active) or (
