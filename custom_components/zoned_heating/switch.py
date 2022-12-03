@@ -24,6 +24,7 @@ from homeassistant.components.climate.const import (
     CURRENT_HVAC_HEAT,
     ATTR_CURRENT_TEMPERATURE,
     HVAC_MODE_OFF,
+    ATTR_TARGET_TEMP_STEP,
 )
 from . import const
 from .util import (
@@ -293,7 +294,8 @@ class ZonedHeaterSwitch(ToggleEntity, RestoreEntity):
          ):
             controller_setpoint = self._stored_controller_setpoint
 
-        current_state = parse_state(self.hass.states.get(self._controller_entity))
+        controller_state = self.hass.states.get(self._controller_entity)
+        current_state = parse_state(controller_state)
         override_setpoint = 0
 
         if isinstance(current_state[ATTR_CURRENT_TEMPERATURE], float):
@@ -310,6 +312,8 @@ class ZonedHeaterSwitch(ToggleEntity, RestoreEntity):
             new_setpoint != current_state[ATTR_TEMPERATURE] and
             compute_domain(self._controller_entity) == Platform.CLIMATE
         ):
+            setpoint_resolution = controller_state.attributes.get(ATTR_TARGET_TEMP_STEP, 0.5)
+            new_setpoint = round(new_setpoint / setpoint_resolution) * setpoint_resolution
             _LOGGER.debug("Updating override setpoint={}".format(new_setpoint))
             self._ignore_controller_state_changes = True
             await async_set_temperature(self.hass, self._controller_entity, new_setpoint)
