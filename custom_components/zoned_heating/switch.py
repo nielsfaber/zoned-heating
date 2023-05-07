@@ -167,7 +167,7 @@ class ZonedHeaterSwitch(ToggleEntity, RestoreEntity):
             # if controller setpoint has changed, make sure to store it
             _LOGGER.debug("Storing controller setpoint={}".format(new_state[ATTR_TEMPERATURE]))
             self._stored_controller_setpoint = new_state[ATTR_TEMPERATURE]
-            await self.async_update_ha_state()
+            self.async_write_ha_state()
 
         if new_state[ATTR_HVAC_MODE] != old_state[ATTR_HVAC_MODE] and new_state[ATTR_HVAC_MODE] == HVAC_MODE_OFF:
             _LOGGER.debug("Controller was turned off, disable zones")
@@ -232,7 +232,7 @@ class ZonedHeaterSwitch(ToggleEntity, RestoreEntity):
         else:
             await self.async_update_override_setpoint(temperature_increase)
 
-        await self.async_update_ha_state()
+        self.async_write_ha_state()
 
     async def async_start_override_mode(self, temperature_increase: float):
         """Start the override of the controller"""
