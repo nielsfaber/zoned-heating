@@ -27,7 +27,6 @@ from homeassistant.components.climate.const import (
 )
 from homeassistant.core import (
     HomeAssistant,
-    SERVICE_CALL_LIMIT,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -76,7 +75,6 @@ async def async_set_hvac_mode(hass: HomeAssistant, entity_ids, hvac_mode: str):
             **params,
             blocking=True,
             context={},
-            limit=SERVICE_CALL_LIMIT,
         )
     )
     await service_task
@@ -99,7 +97,6 @@ async def async_set_temperature(hass: HomeAssistant, entity_ids, temperature: fl
             **params,
             blocking=True,
             context={},
-            limit=SERVICE_CALL_LIMIT,
         )
     )
     await service_task
@@ -121,7 +118,6 @@ async def async_set_switch_state(hass: HomeAssistant, entity_ids, state: str):
             **params,
             blocking=True,
             context={},
-            limit=SERVICE_CALL_LIMIT,
         )
     )
     await service_task
