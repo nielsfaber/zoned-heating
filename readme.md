@@ -22,6 +22,7 @@ No HACS support yet, only manual installation possible
 | Controller       | The device in your house which controls the boiler.                        | The controller can be of type `climate` or `switch`. |
 | Zones            | The device in your house which control the areas.                          | The zones must be of type `climate`.                 |
 | Maximum setpoint | Limits the maximum temperature setpoint that can be send to the controller |                                                      |
+| Controller delay time | Time it takes for the controller entity to be updated after a new setpoint is sent |  Default is 10 seconds (most thermostats update almost instantly)                                                    |
 
 ## Switch entity
 
@@ -37,6 +38,7 @@ The `switch.zoned_heating` entity exposes the following attributes:
 | `controller`           | Entity which has been set up as controller                                                                 |
 | `zones`                | Entities which have been set up as zones                                                                   |
 | `max_setpoint`         | Setting for maximum temperature setpoint                                                                   |
+| `controller_delay_time`         | Setting for controller delay time setpoint                                                                   |
 | `override_active`      | `True`: The controller is turned due to one or more zones.<br>`False`: The controller operates standalone. |
 | `temperature_increase` | Maximum difference in requested temperature and actual temperature of the zones.                           |
 
@@ -64,6 +66,8 @@ This could mean that the zones no longer get heat.
 When any zone requests heat, the override continues as before.
 
 When the controller entity is turned off while override is active, the override mode is stopped and all zones which were requesting heat are  turned off as well.
+
+<u>Note</u>: after the zoned-heating integration has updated the setpoint of the controller, a manual change made to the controller within the time defined by the 'controller delay time' setting will not cause the restoration settings to be updated.
 
 ## Limitations
 The following limitations are known and possibly addressed in future updates:

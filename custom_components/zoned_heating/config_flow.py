@@ -55,6 +55,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         self.controller = None
         self.zones = None
         self.max_setpoint = None
+        self.controller_delay_time = None
 
     async def async_step_init(self, user_input=None):
         """Handle options flow."""
@@ -128,12 +129,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
         if user_input is not None:
             self.max_setpoint = user_input.get(const.CONF_MAX_SETPOINT)
-
-            return self.async_create_entry(title="", data={
-                const.CONF_ZONES: self.zones,
-                const.CONF_CONTROLLER: self.controller,
-                const.CONF_MAX_SETPOINT: self.max_setpoint
-            })
+            return await self.async_step_controller_delay_time()
 
         controller_state = self.hass.states.get(self.controller)
         min_temp = 0
@@ -156,6 +152,38 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                     ): vol.All(
                         vol.Coerce(int),
                         vol.Range(min=min_temp, max=max_temp)
+                    )
+                }
+            )
+        )
+
+    async def async_step_controller_delay_time(self, user_input=None):
+        """Handle options flow."""
+
+        if user_input is not None:
+            self.controller_delay_time = user_input.get(const.CONF_CONTROLLER_DELAY_TIME)
+
+            return self.async_create_entry(title="", data={
+                const.CONF_ZONES: self.zones,
+                const.CONF_CONTROLLER: self.controller,
+                const.CONF_MAX_SETPOINT: self.max_setpoint,
+                const.CONF_CONTROLLER_DELAY_TIME: self.controller_delay_time,
+            })
+
+        default = self.config_entry.options.get(const.CONF_CONTROLLER_DELAY_TIME)
+        if not default:
+            default = const.DEFAULT_CONTROLLER_DELAY_TIME
+
+        return self.async_show_form(
+            step_id=const.CONF_CONTROLLER_DELAY_TIME,
+            data_schema=vol.Schema(
+                {
+                    vol.Required(
+                        const.CONF_CONTROLLER_DELAY_TIME,
+                        default=default
+                    ): vol.All(
+                        vol.Coerce(int),
+                        vol.Range(min=10, max=300)
                     )
                 }
             )

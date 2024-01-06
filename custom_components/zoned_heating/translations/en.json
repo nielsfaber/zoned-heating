@@ -21,6 +21,13 @@
         "data": {
           "max_setpoint": "Controller setpoint temperature limit"
         }
+      },
+      "controller_delay_time": {
+        "title": "Configure Zoned Heating settings",
+        "description": "Time it takes for controller entity to reflect changes in setpoint",
+        "data": {
+          "controller_delay_time": "Controller delay time (in seconds)"
+        }
       }
     }
   }
