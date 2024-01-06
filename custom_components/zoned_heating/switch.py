@@ -23,10 +23,9 @@ from homeassistant.helpers.event import (
 from homeassistant.components.climate.const import (
     ATTR_HVAC_MODE,
     ATTR_HVAC_ACTION,
-    HVAC_MODE_HEAT,
-    CURRENT_HVAC_HEAT,
+    HVACMode,
+    HVACAction,
     ATTR_CURRENT_TEMPERATURE,
-    HVAC_MODE_OFF,
     ATTR_TARGET_TEMP_STEP,
 )
 from . import const
@@ -175,7 +174,7 @@ class ZonedHeaterSwitch(ToggleEntity, RestoreEntity):
             self._stored_controller_setpoint = new_state[ATTR_TEMPERATURE]
             self.async_write_ha_state()
 
-        if new_state[ATTR_HVAC_MODE] != old_state[ATTR_HVAC_MODE] and new_state[ATTR_HVAC_MODE] == HVAC_MODE_OFF:
+        if new_state[ATTR_HVAC_MODE] != old_state[ATTR_HVAC_MODE] and new_state[ATTR_HVAC_MODE] == HVACAction.OFF:
             _LOGGER.debug("Controller was turned off, disable zones")
             await self.async_turn_off_zones()
 
@@ -209,7 +208,7 @@ class ZonedHeaterSwitch(ToggleEntity, RestoreEntity):
         temperature_increase_per_state = [
             state[ATTR_TEMPERATURE] - state[ATTR_CURRENT_TEMPERATURE]
             for state in states
-            if state[ATTR_HVAC_ACTION] == CURRENT_HVAC_HEAT
+            if state[ATTR_HVAC_ACTION] == HVACAction.HEATING
         ]
 
         override_active = False
@@ -250,11 +249,11 @@ class ZonedHeaterSwitch(ToggleEntity, RestoreEntity):
         self._stored_controller_state = current_state[ATTR_HVAC_MODE]
         self._stored_controller_setpoint = current_state[ATTR_TEMPERATURE]
 
-        if current_state[ATTR_HVAC_MODE] != HVAC_MODE_HEAT:
+        if current_state[ATTR_HVAC_MODE] != HVACMode.HEAT:
             # uupdate to heat mode if needed
             await self._ignore_controller_state_changes()
             if compute_domain(self._controller_entity) == Platform.CLIMATE:
-                await async_set_hvac_mode(self.hass, self._controller_entity, HVAC_MODE_HEAT)
+                await async_set_hvac_mode(self.hass, self._controller_entity, HVACMode.HEAT)
             elif compute_domain(self._controller_entity) == Platform.SWITCH:
                 await async_set_switch_state(self.hass, self._controller_entity, STATE_ON)
 
@@ -294,7 +293,7 @@ class ZonedHeaterSwitch(ToggleEntity, RestoreEntity):
 
         controller_setpoint = 0
         if (
-            self._stored_controller_state == HVAC_MODE_HEAT and
+            self._stored_controller_state == HVACMode.HEAT and
             isinstance(self._stored_controller_setpoint, float)
          ):
             controller_setpoint = self._stored_controller_setpoint
@@ -329,13 +328,13 @@ class ZonedHeaterSwitch(ToggleEntity, RestoreEntity):
         entity_list = [
             entity
             for entity in self._zone_entities
-            if parse_state(self.hass.states.get(entity))[ATTR_HVAC_MODE] == HVAC_MODE_HEAT
+            if parse_state(self.hass.states.get(entity))[ATTR_HVAC_MODE] == HVACMode.HEAT
         ]
         if not len(entity_list):
             return
 
         _LOGGER.debug("Turning off zones {}".format(", ".join(entity_list)))
-        await async_set_hvac_mode(self.hass, entity_list, HVAC_MODE_OFF)
+        await async_set_hvac_mode(self.hass, entity_list, HVACMode.OFF)
 
     async def _ignore_controller_state_changes(self):
         """temporarily stop watching for state changes of the controller"""

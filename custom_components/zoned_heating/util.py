@@ -17,11 +17,8 @@ from homeassistant.components.climate.const import (
     ATTR_HVAC_MODE,
     ATTR_CURRENT_TEMPERATURE,
     ATTR_HVAC_ACTION,
-    CURRENT_HVAC_IDLE,
-    CURRENT_HVAC_HEAT,
-    CURRENT_HVAC_OFF,
-    HVAC_MODE_HEAT,
-    HVAC_MODE_OFF,
+    HVACMode,
+    HVACAction,
     SERVICE_SET_HVAC_MODE,
     SERVICE_SET_TEMPERATURE,
 )
@@ -44,16 +41,16 @@ def parse_state(state):
         if (
             data[ATTR_TEMPERATURE] is not None and
             data[ATTR_CURRENT_TEMPERATURE] is not None and
-            data[ATTR_HVAC_MODE] in [HVAC_MODE_OFF, HVAC_MODE_HEAT]
+            data[ATTR_HVAC_MODE] in [HVACMode.OFF, HVACMode.HEAT]
         ):
-            if data[ATTR_HVAC_MODE] == HVAC_MODE_OFF:
-                data[ATTR_HVAC_ACTION] = CURRENT_HVAC_OFF
+            if data[ATTR_HVAC_MODE] == HVACMode.OFF:
+                data[ATTR_HVAC_ACTION] = HVACAction.OFF
             elif data[ATTR_TEMPERATURE] > data[ATTR_CURRENT_TEMPERATURE]:
-                data[ATTR_HVAC_ACTION] = CURRENT_HVAC_HEAT
+                data[ATTR_HVAC_ACTION] = HVACAction.HEAT
             else:
-                data[ATTR_HVAC_ACTION] = CURRENT_HVAC_IDLE
+                data[ATTR_HVAC_ACTION] = HVACAction.IDLE
         else:
-            data[ATTR_HVAC_ACTION] = CURRENT_HVAC_OFF
+            data[ATTR_HVAC_ACTION] = HVACAction.OFF
 
     return data
 
