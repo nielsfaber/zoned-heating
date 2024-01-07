@@ -46,7 +46,7 @@ def parse_state(state):
             if data[ATTR_HVAC_MODE] == HVACMode.OFF:
                 data[ATTR_HVAC_ACTION] = HVACAction.OFF
             elif data[ATTR_TEMPERATURE] > data[ATTR_CURRENT_TEMPERATURE]:
-                data[ATTR_HVAC_ACTION] = HVACAction.HEAT
+                data[ATTR_HVAC_ACTION] = HVACAction.HEATING
             else:
                 data[ATTR_HVAC_ACTION] = HVACAction.IDLE
         else:
