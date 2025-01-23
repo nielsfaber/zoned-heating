@@ -340,10 +340,10 @@ class ZonedHeaterSwitch(ToggleEntity, RestoreEntity):
         self._stored_controller_state = None
 
     async def async_update_override_setpoint(self, temperature_increase: float):
-        if(self._absolute_mode): 
-            self.async_update_override_setpoint_absolute(temperature_increase)
+        if self._absolute_mode:
+            await self.async_update_override_setpoint_absolute(temperature_increase)
         else: 
-            self.async_update_override_setpoint_offset(temperature_increase)
+            await self.async_update_override_setpoint_offset(temperature_increase)
 
     async def async_update_override_setpoint_absolute(self, temperature_increase: float):
         """Update the override setpoint of the controller"""
