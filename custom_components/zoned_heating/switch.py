@@ -203,6 +203,9 @@ class ZonedHeaterSwitch(ToggleEntity, RestoreEntity):
             await self.async_calculate_override()
 
     async def async_calculate_override(self):
+
+        _LOGGER.debug("Absolute control mode={}".format(self._absolute_mode))
+
         if self._absolute_mode:
             await self.async_calculate_override_absoulte()
         else:
@@ -340,6 +343,9 @@ class ZonedHeaterSwitch(ToggleEntity, RestoreEntity):
         self._stored_controller_state = None
 
     async def async_update_override_setpoint(self, temperature_increase: float):
+        
+        _LOGGER.debug("Absolute control mode={}".format(self._absolute_mode))
+        
         if self._absolute_mode:
             await self.async_update_override_setpoint_absolute(temperature_increase)
         else: 

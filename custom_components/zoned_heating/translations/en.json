@@ -24,9 +24,9 @@
       },
       "absolute_mode": {
         "title": "Configure Zoned Heating settings",
-        "description": "Controller setpoint is controlled by offset from current zone",
+        "description": "Controller setpoint is directly controlled by absolute TRV target temperature",
         "data": {
-          "absolute_mode": "Controller setpoint controlled by offset"
+          "absolute_mode": "Controller setpoint is TRV target temperature"
         }
       },
       "controller_delay_time": {
