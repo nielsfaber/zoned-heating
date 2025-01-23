@@ -56,6 +56,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         self.zones = None
         self.max_setpoint = None
         self.controller_delay_time = None
+        self.absolute_mode = None
 
     async def async_step_init(self, user_input=None):
         """Handle options flow."""
@@ -162,13 +163,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
         if user_input is not None:
             self.controller_delay_time = user_input.get(const.CONF_CONTROLLER_DELAY_TIME)
-
-            return self.async_create_entry(title="", data={
-                const.CONF_ZONES: self.zones,
-                const.CONF_CONTROLLER: self.controller,
-                const.CONF_MAX_SETPOINT: self.max_setpoint,
-                const.CONF_CONTROLLER_DELAY_TIME: self.controller_delay_time,
-            })
+            return await self.async_step_absolute_mode()
 
         default = self.config_entry.options.get(const.CONF_CONTROLLER_DELAY_TIME)
         if not default:
@@ -185,6 +180,36 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                         vol.Coerce(int),
                         vol.Range(min=10, max=300)
                     )
+                }
+            )
+        )
+
+    async def async_step_absolute_mode(self, user_input=None):
+        """Handle options flow."""
+
+        if user_input is not None:
+            self.controller_delay_time = user_input.get(const.CONF_ABSOLUTE_MODE)
+
+            return self.async_create_entry(title="", data={
+                const.CONF_ZONES: self.zones,
+                const.CONF_CONTROLLER: self.controller,
+                const.CONF_MAX_SETPOINT: self.max_setpoint,
+                const.CONF_CONTROLLER_DELAY_TIME: self.controller_delay_time,
+                const.CONF_ABSOLUTE_MODE : self.absolute_mode
+            })
+
+        default = self.config_entry.options.get(const.CONF_ABSOLUTE_MODE)
+        if not default:
+            default = const.DEFAULT_ABSOLUTE_MODE
+
+        return self.async_show_form(
+            step_id=const.CONF_ABSOLUTE_MODE,
+            data_schema=vol.Schema(
+                {
+                    vol.Required(
+                        const.CONF_ABSOLUTE_MODE,
+                        default=default
+                    ): bool
                 }
             )
         )

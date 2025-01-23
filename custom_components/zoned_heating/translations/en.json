@@ -22,6 +22,13 @@
           "max_setpoint": "Controller setpoint temperature limit"
         }
       },
+      "absolute_mode": {
+        "title": "Configure Zoned Heating settings",
+        "description": "Controller setpoint is controlled by offset from current zone",
+        "data": {
+          "absolute_mode": "Controller setpoint controlled by offset"
+        }
+      },
       "controller_delay_time": {
         "title": "Configure Zoned Heating settings",
         "description": "Time it takes for controller entity to reflect changes in setpoint",

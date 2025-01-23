@@ -10,9 +10,11 @@ CONF_CONTROLLER = "controller"
 CONF_ZONES = "zones"
 CONF_MAX_SETPOINT = "max_setpoint"
 CONF_CONTROLLER_DELAY_TIME = "controller_delay_time"
+CONF_ABSOLUTE_MODE = "absolute_mode"
 
 DEFAULT_MAX_SETPOINT = 21
 DEFAULT_CONTROLLER_DELAY_TIME = 10
+DEFAULT_ABSOLUTE_MODE = False
 
 ATTR_OVERRIDE_ACTIVE = "override_active"
 ATTR_TEMPERATURE_INCREASE = "temperature_increase"
