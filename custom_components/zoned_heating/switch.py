@@ -209,7 +209,7 @@ class ZonedHeaterSwitch(ToggleEntity, RestoreEntity):
         temperature_increase_per_state = [
             state[ATTR_TEMPERATURE] - state[ATTR_CURRENT_TEMPERATURE]
             for state in states
-            if state[ATTR_HVAC_ACTION] == HVACAction.HEATING
+            if state[ATTR_HVAC_ACTION] == HVACAction.HEATING and state[ATTR_HVAC_MODE] != HVACAction.OFF 
         ]
 
         override_active = False
