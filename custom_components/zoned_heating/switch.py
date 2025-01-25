@@ -194,7 +194,7 @@ class ZonedHeaterSwitch(ToggleEntity, RestoreEntity):
             _LOGGER.debug("Zone {} updated: setpoint={}".format(entity, new_state[ATTR_TEMPERATURE]))
             await self.async_calculate_override()
 
-        if old_state[ATTR_HVAC_ACTION] != new_state[ATTR_HVAC_ACTION]:
+        if old_state[ATTR_HVAC_ACTION] != new_state[ATTR_HVAC_ACTION] or old_state[ATTR_HVAC_MODE] != new_state[ATTR_HVAC_MODE] :
             # action of a zone was updated, check whether controller needs to be updated
             _LOGGER.debug("Zone {} updated: action={}".format(entity, new_state[ATTR_HVAC_ACTION]))
             await self.async_calculate_override()
