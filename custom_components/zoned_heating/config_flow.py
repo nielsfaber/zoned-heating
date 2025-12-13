@@ -2,6 +2,7 @@
 import secrets
 import logging
 import voluptuous as vol
+from copy import deepcopy
 
 from homeassistant import config_entries
 from homeassistant.core import callback
@@ -50,8 +51,8 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
     def __init__(self, config_entry: config_entries.ConfigEntry):
         """Initialize options flow."""
-        self.config_entry = config_entry
 
+        self.options = deepcopy(dict(config_entry.options))
         self.controller = None
         self.zones = None
         self.max_setpoint = None
@@ -74,7 +75,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         ]
         controller_options = sorted(all_climates) + sorted(all_switches)
 
-        default = self.config_entry.options.get(const.CONF_CONTROLLER)
+        default = self.options.get(const.CONF_CONTROLLER)
         if default not in controller_options:
             default = None
 
@@ -105,7 +106,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
         default = [
             climate
-            for climate in self.config_entry.options.get(const.CONF_ZONES, [])
+            for climate in self.options.get(const.CONF_ZONES, [])
             if climate in zone_options
         ]
 
@@ -138,9 +139,9 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             min_temp = round(controller_state.attributes.get(ATTR_MIN_TEMP))
             max_temp = round(controller_state.attributes.get(ATTR_MAX_TEMP))
 
-        default = self.config_entry.options.get(const.CONF_MAX_SETPOINT)
+        default = self.options.get(const.CONF_MAX_SETPOINT)
         if not default or default < min_temp or default > max_temp:
-            default = round((min_temp + max_temp)/2)
+            default = const.DEFAULT_MAX_SETPOINT
 
         return self.async_show_form(
             step_id=const.CONF_MAX_SETPOINT,
@@ -148,7 +149,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 {
                     vol.Required(
                         const.CONF_MAX_SETPOINT,
-                        default=const.DEFAULT_MAX_SETPOINT
+                        default=default
                     ): vol.All(
                         vol.Coerce(int),
                         vol.Range(min=min_temp, max=max_temp)
@@ -170,7 +171,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 const.CONF_CONTROLLER_DELAY_TIME: self.controller_delay_time,
             })
 
-        default = self.config_entry.options.get(const.CONF_CONTROLLER_DELAY_TIME)
+        default = self.options.get(const.CONF_CONTROLLER_DELAY_TIME)
         if not default:
             default = const.DEFAULT_CONTROLLER_DELAY_TIME
 
