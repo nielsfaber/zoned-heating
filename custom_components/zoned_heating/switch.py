@@ -81,9 +81,11 @@ class ZonedHeaterSwitch(ToggleEntity, RestoreEntity):
 
     async def async_added_to_hass(self):
         await super().async_added_to_hass()
+        _LOGGER.debug("Registering entity {}".format(self.entity_id))
 
         state = await self.async_get_last_state()
         if state:
+            _LOGGER.debug("Restored data prior to restart: {}".format(state.attributes))
             self._enabled = state.state == STATE_ON
             self._override_active = state.attributes.get(const.ATTR_OVERRIDE_ACTIVE)
             self._temperature_increase = state.attributes.get(const.ATTR_TEMPERATURE_INCREASE)
