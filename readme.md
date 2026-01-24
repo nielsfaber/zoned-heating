@@ -5,11 +5,11 @@ This is an integration for Home Assistant, which can be used to create a multi-z
 
 It creates a 'link' between your main thermostat and smart radiator valves (TRVs). 
 
-**Note:** This is a work-in-progress, so things may not work properly. Report issues when you find them.
+**Note:** This project is not actively maintained, so things may not work properly due to HA updates. Report issues when you find them.
 
 ## Installation
-No HACS support yet, only manual installation is possible
-
+Integration is availble in HACS. This method is recommended due to ease of installation + updating.
+Steps for manual installation are as follows:
 1. Place files in `custom_components` folder.
 2. Restart HA to load the custom component. 
 3. In HA, go to Configuration -> Integrations and click 'add integration'. Look for Zoned Heating. If it does not appear, reload your browser cache.
@@ -74,3 +74,4 @@ The following limitations are known and possibly addressed in future updates:
 * The integration is only tested for `climate` modes `heat` and `off`. Modes `cool` and `heat_cool` might result in unwanted behaviour.
 * The override logic assumes that your zones can heat up quicker than the controller. If this is not the case, the zones may never reach the desired temperature.
 * This integration does not handle presets for `climate` devices.
+
