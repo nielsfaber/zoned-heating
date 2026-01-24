@@ -1,6 +1,6 @@
 """Store constants."""
 
-VERSION = "1.1.3"
+VERSION = "1.1.4"
 DOMAIN = "zoned_heating"
 NAME = "Zoned Heating"
 DATA = "data"
