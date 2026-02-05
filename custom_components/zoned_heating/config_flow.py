@@ -130,7 +130,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
         if user_input is not None:
             self.max_setpoint = user_input.get(const.CONF_MAX_SETPOINT)
-            return await self.async_step_controller_delay_time()
+            return await self.async_step_hysteresis()
 
         controller_state = self.hass.states.get(self.controller)
         min_temp = 0
@@ -158,6 +158,30 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             )
         )
 
+    async def async_step_hysteresis(self, user_input=None):
+        """Handle hysteresis option during the options flow."""
+
+        if user_input is not None:
+            self.hysteresis = user_input.get(const.CONF_HYSTERESIS)
+            return await self.async_step_controller_delay_time()
+
+        default = self.options.get(const.CONF_HYSTERESIS, const.DEFAULT_HYSTERESIS)
+
+        return self.async_show_form(
+            step_id=const.CONF_HYSTERESIS,
+            data_schema=vol.Schema(
+                {
+                    vol.Required(
+                        const.CONF_HYSTERESIS,
+                        default=default
+                    ): vol.All(
+                        vol.Coerce(float),
+                        vol.Range(min=0, max=10)
+                    )
+                }
+            )
+        )
+
     async def async_step_controller_delay_time(self, user_input=None):
         """Handle options flow."""
 
@@ -169,6 +193,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 const.CONF_CONTROLLER: self.controller,
                 const.CONF_MAX_SETPOINT: self.max_setpoint,
                 const.CONF_CONTROLLER_DELAY_TIME: self.controller_delay_time,
+                const.CONF_HYSTERESIS: getattr(self, "hysteresis", const.DEFAULT_HYSTERESIS),
             })
 
         default = self.options.get(const.CONF_CONTROLLER_DELAY_TIME)
